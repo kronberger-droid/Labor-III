@@ -41,14 +41,14 @@ for repo in $labor_repos {
     
     # Try to add the repository as a subtree with main branch
     try {
-        ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" main --squash
+        ^git subtree add $"--prefix=($folder_name)" $"https://github.com/($github_user)/($repo).git" main --squash
         print $"✅ Successfully added ($repo) to folder: ($folder_name)"
     } catch {
         print $"⚠️  Failed to add ($repo) - might not have main branch, trying master..."
         
         # Try with master branch if main fails
         try {
-            ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" master --squash
+            ^git subtree add $"--prefix=($folder_name)" $"https://github.com/($github_user)/($repo).git" master --squash
             print $"✅ Successfully added ($repo) to folder: ($folder_name) using master branch"
         } catch {
             print $"❌ Failed to add ($repo) with both main and master branches"
