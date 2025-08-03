@@ -33,24 +33,24 @@ for repo in $labor_repos {
     # Create folder name (remove Labor-III- prefix for cleaner structure)
     let folder_name = ($repo | str replace "Labor-III-" "")
     
-    # Try to add the repository as a subtree with main branch
-    let main_result = (do -i { 
-        ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" main --squash 
-    })
+    # Check if folder already exists
+    if ($folder_name | path exists) {
+        print $"⏭️  Skipping ($repo) - folder ($folder_name) already exists"
+        continue
+    }
     
-    if $main_result.exit_code == 0 {
+    # Try to add the repository as a subtree with main branch
+    try {
+        ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" main --squash
         print $"✅ Successfully added ($repo) to folder: ($folder_name)"
-    } else {
-        print $"⚠️  Failed to add ($repo) (might not have 'main' branch, trying 'master'...)"
+    } catch {
+        print $"⚠️  Failed to add ($repo) - might not have main branch, trying master..."
         
         # Try with master branch if main fails
-        let master_result = (do -i { 
-            ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" master --squash 
-        })
-        
-        if $master_result.exit_code == 0 {
-            print $"✅ Successfully added ($repo) to folder: ($folder_name) (using master branch)"
-        } else {
+        try {
+            ^git subtree add --prefix=$folder_name $"https://github.com/($github_user)/($repo).git" master --squash
+            print $"✅ Successfully added ($repo) to folder: ($folder_name) using master branch"
+        } catch {
             print $"❌ Failed to add ($repo) with both main and master branches"
         }
     }
