@@ -2,7 +2,7 @@
 
 Lab reports for **Labor III** at TU Wien (Faculty of Physics), written in [Typst](https://typst.app/).
 
-**Authors:** Raul Wagner & Martin Kronberger — Group 301
+**Authors:** Raul Wagner & Martin Kronberger
 
 ## Experiments
 
@@ -45,3 +45,4 @@ Data analysis and plotting are done directly in Typst using the [lilaq](https://
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
