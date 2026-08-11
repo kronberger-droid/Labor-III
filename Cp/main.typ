@@ -1,19 +1,12 @@
 #import "lab-report.typ": lab-report
 #import "@preview/lilaq:0.2.0": (
-    diagram,
-  linspace,
-  marks,
-  path,
-  place,
-  plot,
-  scatter,
-  xaxis,
-  yaxis,
+  diagram, linspace, marks, path, place, plot, scatter, xaxis, yaxis,
 )
 #import "lib.typ": *
 #import calc: ceil, pow
 
 // create title page and initialize all of the formating
+#set text(font: "STIX Two Text")
 #show: lab-report.with(
   title: "Specific Heat of Solids",
   authors: ("Raul Wagner", "Martin Kronberger"),
@@ -40,7 +33,7 @@ In metals and alloys, in addition to the lattice-specific heat common to all sol
 
 = Experimental Setup
 
-The experimental setup consists of a gas-fillable system containing a #mass g sample of Holmium. The lower part of the system containing the sample, is immersed in a Glass Dewar filled with liquid nitrogen. The sample is equipped with a Pt100 resistance thermometer used to measure its temperature and can be heated via a strain gauge ($350 plus.minus 1 space Omega $) which is attached to it.
+The experimental setup consists of a gas-fillable system containing a #mass g sample of Holmium. The lower part of the system containing the sample, is immersed in a Glass Dewar filled with liquid nitrogen. The sample is equipped with a Pt100 resistance thermometer used to measure its temperature and can be heated via a strain gauge ($350 plus.minus 1 space Omega$) which is attached to it.
 To create nearly adiabatic conditions for the sample, the system can be evacuated to below 10⁻⁴ mbar using a rotary vane pump and a turbomolecular pump.
 The wires used for measurement are additionally shielded as effectively as possible using copper plates and a copper shield surrounding the sample.
 Furthermore, the sample is suspended on nylon threads to minimize additional heat conduction.
@@ -52,7 +45,7 @@ Voltage measurements are carried out using the NI-6210 data acquisition module, 
 
 #figure(
   image("assets/measurement_setup.png"),
-  caption: [Setup: 1. exhaust gas, 2. rotary vane pump, 3. shut-off valve, 4. turbomolecular pump, 5. Penning vacuum gauge, 6. thermocouple vacuum gauge, 7. cryostat, 8. Dewar flask, 9. pressure gauge, 10. vent valve, 11. helium gas cylinder.]
+  caption: [Setup: 1. exhaust gas, 2. rotary vane pump, 3. shut-off valve, 4. turbomolecular pump, 5. Penning vacuum gauge, 6. thermocouple vacuum gauge, 7. cryostat, 8. Dewar flask, 9. pressure gauge, 10. vent valve, 11. helium gas cylinder.],
 )
 
 == Cooling cycle before measurements <sec:cooling>
@@ -85,7 +78,7 @@ $
   [Sample Molar Mass:], [#molar_mass g],
   [Resistance of the DMS:], [$#resistance plus.minus 1 space Omega$],
   [Heating Current:], [$#(current * 1000) plus.minus 0.1$ mA],
-  [Measurement Current (PT100)], [#(measurement_current * 1000) mA]
+  [Measurement Current (PT100)], [#(measurement_current * 1000) mA],
 )
 
 = Continuous Measurement
@@ -116,16 +109,18 @@ At every location it uses a data-point close to the middle as time and temperatu
 Afterwards $Delta T$ and $Delta t$ are approximated by assuming the curve inside of the current window to be a linear function through the boundary points.
 
 #let calc_cont_cp_T(data, window_width) = {
-  data.windows(window_width).map(window => {
-    let delta_T = window.last().temperature - window.first().temperature
-    let delta_t = window.last().time - window.first().time
+  data
+    .windows(window_width)
+    .map(window => {
+      let delta_T = window.last().temperature - window.first().temperature
+      let delta_t = window.last().time - window.first().time
 
-    (
-      time: window.at(ceil(window_width / 2)).time,
-      temperature: window.at(ceil(window_width / 2)).temperature,
-      cp: ((pow(current, 2) * resistance) / mass) * (delta_t / delta_T)
-    )
-  })
+      (
+        time: window.at(ceil(window_width / 2)).time,
+        temperature: window.at(ceil(window_width / 2)).temperature,
+        cp: ((pow(current, 2) * resistance) / mass) * (delta_t / delta_T),
+      )
+    })
 }
 
 #let cp_T = calc_cont_cp_T(data, window_width)
@@ -155,7 +150,7 @@ where $m$ is the mass of the sample, $R$ is the resistance of the DMS and $I$ is
         label: [Window width: #window_width],
         mark: none,
         stroke: stroke(thickness: 1.5pt),
-        color: blue
+        color: blue,
       ),
       plot(
         cp_T_low.map(x => x.temperature),
@@ -172,9 +167,9 @@ where $m$ is the mass of the sample, $R$ is the resistance of the DMS and $I$ is
         mark: none,
         color: red.transparentize(60%),
         stroke: stroke(thickness: 0.8pt),
-      ), 
+      ),
     ),
-    caption: [Specific heat capacity plotted over temperature acquired from continuous measurement method for different window widths.]
+    caption: [Specific heat capacity plotted over temperature acquired from continuous measurement method for different window widths.],
   )<fig:continuous>
 ]
 
@@ -194,14 +189,14 @@ $
 $
 /*Including the errors of all other values the error of our measured specific heat capacitance is the following:
 $
-  delta C_p = (0.05A dot 350Omega)/(#mass g) dot 1/((d T)/(d t)) dot 0.0005A + (0.625A)/(#mass g) dot 1/((d T)/(d t)) dot 1Omega + 
-  (0.625A dot 350Omega)/(#mass g) dot 1/((d T)^2/(d t)) dot delta d T + 
+  delta C_p = (0.05A dot 350Omega)/(#mass g) dot 1/((d T)/(d t)) dot 0.0005A + (0.625A)/(#mass g) dot 1/((d T)/(d t)) dot 1Omega +
+  (0.625A dot 350Omega)/(#mass g) dot 1/((d T)^2/(d t)) dot delta d T +
   (0.625 A dot 350Omega)/(#mass g) dot 1/(d T) dot delta d t
 $*/
 
 Since the error increases with the temperature the maximum error is expected at the highest temperature.
 
-Therefore the relative estimated error of $C_p$ can be $plus.minus 3,43%$ at 300K, taking the errors of all values into account. 
+Therefore the relative estimated error of $C_p$ can be $plus.minus 3,43%$ at 300K, taking the errors of all values into account.
 
 
 = Nerst Method
@@ -213,7 +208,7 @@ Measuring the temperature at this thermal equilibrium and taking thermal drifts 
 In this experiment the sample was again cooled down to 100K according to the cooling procedure described in @sec:cooling.
 Once the start temperature and a vacuum of $10^(-4)$ mbar was reached, the heating of the sample started with switching on the heater power supply for 12 seconds using 25 mA.
 The heat pulse was followed by a resting period of 8 seconds.
-By repeating heating and resting pulse the heating of the sample continued in steps until it reached the end temperature of 170K. 
+By repeating heating and resting pulse the heating of the sample continued in steps until it reached the end temperature of 170K.
 The temperature was monitored throughout the whole experiment using the NI-6210 data acquisition module and the LabVIEW Virtual Instrument program resulting in a dataset of temperature over time, with clearly observable heating and resting periods, marked by the voltage being high or low, as seen in the following plot:
 
 // threshold voltage (max. approx 4 V min approx. 0 V):
@@ -262,10 +257,10 @@ The temperature was monitored throughout the whole experiment using the NI-6210 
           step_data_test.map(y => y.voltage),
           color: maroon,
           mark: none,
-        )
+        ),
       ),
     ),
-    caption: [Raw slice of the data-set acquired using the Nerst method with thresholded voltage.]
+    caption: [Raw slice of the data-set acquired using the Nerst method with thresholded voltage.],
   )
 ]
 
@@ -305,7 +300,7 @@ Now using the following formulas the specific heat capacity $C_p$ and its corres
 $
   C_p (T_m) = (I_h^2 R t_h) / (m Delta T_x) quad "and" quad T_m = T_2 + k_1 t_h / 2 + (Delta T_x) / 2
 $
-Where $I_h$ is the heating current, $R$ is the resistance of the strain gauge, $t_h$ the duration of the heating period, $m$ the mass of the sample, $Delta T_x$ the change in temperature during the heating period, $T_2$ temperature value at the beginning of the heating period and $k_1$ the slope of the temperature over time during the resting period. 
+Where $I_h$ is the heating current, $R$ is the resistance of the strain gauge, $t_h$ the duration of the heating period, $m$ the mass of the sample, $Delta T_x$ the change in temperature during the heating period, $T_2$ temperature value at the beginning of the heating period and $k_1$ the slope of the temperature over time during the resting period.
 
 // calculate a data-point for every on-off tuple using the given equations resulting in a list of dicts:
 // ( ( time_m: float, temperature_m: float , cp: float), ... )
@@ -388,7 +383,7 @@ Where $I_h$ is the heating current, $R$ is the resistance of the strain gauge, $
         label: [Stepped measurement using Nerst method],
       ),
     ),
-    caption: [Specific heat capacity over temperature using the Nerst method, compared to shifted data-set from continuous measurement as seen in @fig:continuous.]
+    caption: [Specific heat capacity over temperature using the Nerst method, compared to shifted data-set from continuous measurement as seen in @fig:continuous.],
   )
 ]
 
@@ -497,7 +492,7 @@ The area under the resulting linearized triangle is then calculated and correspo
         size: 6pt,
       ),
     ),
-    caption: [Specific heat over T plotted over T acquired from Nerst method compared to shifted data-set from continuous measurement. Including Nerst temperature and area determining magnetic entropy.]
+    caption: [Specific heat over T plotted over T acquired from Nerst method compared to shifted data-set from continuous measurement. Including Nerst temperature and area determining magnetic entropy.],
   )
 ]
 
@@ -505,7 +500,7 @@ Therefore the Nerst temperature and the magnetic entropy yield with relatively h
 $
   T_N = #round(T_N, digits: 0) plus.minus 3" K"
   quad quad "and" quad quad
-  S_("mag") = #(round(S_mag, digits: 3)*1000) plus.minus 3 ("mJ") / "K"
+  S_("mag") = #(round(S_mag, digits: 3) * 1000) plus.minus 3 ("mJ") / "K"
 $
 #pagebreak()
 
